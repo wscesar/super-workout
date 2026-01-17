@@ -8,7 +8,7 @@ export const WEEK = [
   'Saturday',
 ];
 
-export const WORKOUTS = [
+export const EXERCISES = [
   'Squat',
   'Push-up',
   'Pull-up',

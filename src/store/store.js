@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import selectedDayReducer from "./selectedDaySlice";
+import weekDayReducer from "./weekDaySlice";
+import exerciseReducer from "./exerciseSlice";
 
 export const store = configureStore({
   reducer: {
-    selectedDay: selectedDayReducer,
+    weekDay: weekDayReducer,
+    exercise: exerciseReducer,
   },
 });
