@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Button, StyleSheet, Text, TextInput } from "react-native";
 import { useSelector } from "react-redux";
 import DropDownButton from "../components/DropDownButton";
+import { WORKOUTS } from "../utils/constants";
 
 
 export default function WorkoutScreen({ navigation }) {
@@ -9,16 +10,10 @@ export default function WorkoutScreen({ navigation }) {
   const [reps, setReps] = useState("");
   const [rest, setRest] = useState("");
   const [weight, setWeight] = useState("");
-
-  const WORKOUTS = [
-    'Squat',
-    'Push-up',
-    'Pull-up',
-    'Bicep curl',
-    'Skull Crusher',
-    'Shoulder Press',
-    'Leg Press',
-  ];
+  const workout = {
+    exercise: '',
+    weight, reps, rest,
+  }
 
   return (
     <View style={css.container}>
@@ -31,7 +26,7 @@ export default function WorkoutScreen({ navigation }) {
         title="Add Workout"
         onPress={
           () => {
-            
+
           }
         }
       />

@@ -3,16 +3,8 @@ import { Button, StyleSheet, View } from "react-native";
 import { useDispatch } from "react-redux";
 import DropDownButton from "../components/DropDownButton";
 import { setSelectedDay } from "../store/selectedDaySlice";
+import { WEEK } from "../utils/constants";
 
-export const WEEK = [
-  'Sundae',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
