@@ -2,20 +2,31 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { View, ScrollView, StyleSheet, Text } from "react-native";
 import { TextInput, Button, Switch } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import DropDownButton from "../components/DropDownButton";
 import { EXERCISES } from "../utils/constants";
 import { addSerie } from "../store/workoutSlice";
 
 
 export default function WorkoutScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const weekDay = useSelector((state) => state.weekDay.value);
   const seriesForDay = useSelector(
     (state) => state.workout.byDay[weekDay] || []
   );
 
+  const weekDayLabel = weekDay ? t(`week.${weekDay}`) : "";
+  const exerciseOptions = useMemo(
+    () => EXERCISES.map((id) => ({ value: id, label: t(`exercise.${id}`) })),
+    [i18n.language, t]
+  );
+
   useLayoutEffect(() => {
-    navigation.setOptions({ title: `${weekDay} workout` });
-  }, [navigation]);
+    if (!weekDayLabel) return;
+    navigation.setOptions({
+      title: t("workout.title", { day: weekDayLabel }),
+    });
+  }, [navigation, t, i18n.language, weekDayLabel]);
 
   const dispatch = useDispatch();
   const [executions, setExecutions] = useState("3");
@@ -118,7 +129,11 @@ export default function WorkoutScreen({ navigation }) {
             style={[css.block, css.w100]}
             value={restInputs[i] || "60"}
             onChangeText={(value) => handleRestChange(i, value)}
-            label={`Rest time ${sameRest ? '' : i + 1}`}
+            label={
+              sameRest
+                ? t("workout.restTime")
+                : t("workout.restTimeIndex", { index: i + 1 })
+            }
             mode="outlined"
           />
         ))}
@@ -130,11 +145,11 @@ export default function WorkoutScreen({ navigation }) {
     <ScrollView>
       <View style={css.container}>
 
-        <DropDownButton list={EXERCISES} onSelect={setExerciseTitle} />
+        <DropDownButton list={exerciseOptions} onSelect={setExerciseTitle} />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
           <TextInput
-            label="Sets"
+            label={t("workout.sets")}
             mode='outlined'
             style={[css.w30]}
             keyboardType="numeric"
@@ -147,7 +162,7 @@ export default function WorkoutScreen({ navigation }) {
             }}
           />
           <TextInput
-            label="Repetitions"
+            label={t("workout.repetitions")}
             mode='outlined'
             style={[css.w30]}
             keyboardType="numeric"
@@ -160,7 +175,7 @@ export default function WorkoutScreen({ navigation }) {
             }}
           />
           <TextInput
-            label="Weight"
+            label={t("workout.weight")}
             mode='outlined'
             style={[css.w30]}
             keyboardType="numeric"
@@ -189,10 +204,14 @@ export default function WorkoutScreen({ navigation }) {
             style={[css.block]}
             onPress={handleAddSet}
             disabled={!exerciseReps || !exerciseWeight}
-          > Add exercise to the set</Button>
+          >
+            {t("workout.addExerciseToSet")}
+          </Button>
           {
             exerciseSets.reps.length > 0 && (
-              <Text style={css.helperText}> Sets: {exerciseSets.reps.length}</Text>
+              <Text style={css.helperText}>
+                {t("workout.setsCount", { count: exerciseSets.reps.length })}
+              </Text>
             )
           }
           <Button
@@ -201,16 +220,25 @@ export default function WorkoutScreen({ navigation }) {
             mode="contained"
             onPress={handleAddExercise}
             disabled={exerciseSets.reps.length <= 0}
-          >Add set to the workout </Button>
+          >
+            {t("workout.addSetToWorkout")}
+          </Button>
         </View>
 
         {serieExercises.length > 0 && (
           <View style={css.block}>
-            <Text style={css.label}>{`${weekDay} workout`}</Text>
+            <Text style={css.label}>
+              {t("workout.dayWorkout", { day: weekDayLabel })}
+            </Text>
             {
               serieExercises.map((e, i) => (
                 <Text key={`${e.title}-${i}`}>
-                  {e.reps.length}x {e.title} | {e.rest || 12} reps | {restInputs || 60}s rest
+                  {t("workout.exerciseLine", {
+                    sets: e.reps.length,
+                    title: t(`exercise.${e.title}`),
+                    reps: e.rest || 12,
+                    rest: restInputs || 60,
+                  })}
                 </Text>
               ))
             }
@@ -223,10 +251,15 @@ export default function WorkoutScreen({ navigation }) {
 
         {seriesForDay.length > 0 && (
           <View style={css.block}>
-            <Text style={css.label}>Series for {weekDay}</Text>
+            <Text style={css.label}>
+              {t("workout.seriesForDay", { day: weekDayLabel })}
+            </Text>
             {seriesForDay.map((serie, index) => (
               <Text key={`serie-${index}`}>
-                Serie {index + 1}: {serie.exercises.length} exercises
+                {t("workout.serieLine", {
+                  index: index + 1,
+                  count: serie.exercises.length,
+                })}
               </Text>
             ))}
           </View>

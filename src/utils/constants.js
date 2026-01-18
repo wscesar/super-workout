@@ -1,19 +1,19 @@
 export const WEEK = [
-  'Sundae',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
 ];
 
 export const EXERCISES = [
-  'Squat',
-  'Push-up',
-  'Pull-up',
-  'Bicep curl',
-  'Skull Crusher',
-  'Shoulder Press',
-  'Leg Press',
+  "squat",
+  "pushUp",
+  "pullUp",
+  "bicepCurl",
+  "skullCrusher",
+  "shoulderPress",
+  "legPress",
 ];

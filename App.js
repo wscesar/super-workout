@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WorkoutScreen from './src/view/WorkoutScreen';
 import HomeScreen from './src/view/HomeScreen';
 import { store } from "./src/store/store";
+import "./src/i18n";
 
 
 const Stack = createNativeStackNavigator();

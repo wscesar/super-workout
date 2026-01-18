@@ -1,11 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from 'react-native';
 import { Button, Menu } from 'react-native-paper';
 
 
 const DropDownButton = ({ onSelect, list }) => {
-  const [visible, setVisible] = useState(false)
-  const [value, setValue] = useState(list[0])
+  const normalizedList = useMemo(
+    () =>
+      (list || []).map((item) =>
+        typeof item === "string"
+          ? { label: item, value: item }
+          : { label: item.label, value: item.value }
+      ),
+    [list]
+  );
+
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState(normalizedList[0]?.value);
+
+  useEffect(() => {
+    if (!normalizedList.length) {
+      setValue(undefined);
+      return;
+    }
+    if (!normalizedList.some((item) => item.value === value)) {
+      setValue(normalizedList[0].value);
+    }
+  }, [normalizedList, value]);
+
+  const selectedLabel = useMemo(() => {
+    const selected = normalizedList.find((item) => item.value === value);
+    return selected ? selected.label : "";
+  }, [normalizedList, value]);
   // return (
   //   <View style={{ padding: 16 }}>
   //     <Menu
@@ -25,7 +50,7 @@ const DropDownButton = ({ onSelect, list }) => {
   // )
   return (<>
     <TouchableOpacity style={css.selector} onPress={() => setVisible(true)}>
-      <Text style={[css.text, css.bold]}>{value}</Text>
+      <Text style={[css.text, css.bold]}>{selectedLabel}</Text>
       <Text style={css.icon}>▼</Text>
     </TouchableOpacity>
 
@@ -40,17 +65,17 @@ const DropDownButton = ({ onSelect, list }) => {
         onPress={() => setVisible(false)}>
         <View style={css.list}>
           {
-            list.map((item) => (
+            normalizedList.map((item) => (
               <TouchableOpacity
-                key={item}
-                style={[css.item, item === value && css.active]}
+                key={item.value}
+                style={[css.item, item.value === value && css.active]}
                 onPress={() => {
-                  setValue(item);
+                  setValue(item.value);
                   setVisible(false);
-                  onSelect && onSelect(item);
+                  onSelect && onSelect(item.value);
                 }}>
-                <Text style={[css.text, item === value && css.active]}>
-                  {item}
+                <Text style={[css.text, item.value === value && css.active]}>
+                  {item.label}
                 </Text>
               </TouchableOpacity>
             ))
