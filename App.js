@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
+import { PaperProvider } from 'react-native-paper';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,12 +21,14 @@ export default function App() {
       <SafeAreaProvider>
         <SafeAreaView style={css.container}>
           <Provider store={store}>
-            <NavigationContainer>
-              <Stack.Navigator initialRouteName='Home'>
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="Workout" component={WorkoutScreen} />
-              </Stack.Navigator>
-            </NavigationContainer>
+            <PaperProvider>
+              <NavigationContainer>
+                <Stack.Navigator initialRouteName='Home'>
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="Workout" component={WorkoutScreen} />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </PaperProvider>
           </Provider>
         </SafeAreaView>
       </SafeAreaProvider>

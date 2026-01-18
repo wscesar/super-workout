@@ -1,10 +1,28 @@
 import { useState } from 'react';
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from 'react-native';
+import { Button, Menu } from 'react-native-paper';
 
 
 const DropDownButton = ({ onSelect, list }) => {
   const [visible, setVisible] = useState(false)
   const [value, setValue] = useState(list[0])
+  // return (
+  //   <View style={{ padding: 16 }}>
+  //     <Menu
+  //       visible={visible}
+  //       onDismiss={() => setVisible(false)}
+  //       anchor={
+  //         <Button mode="outlined" onPress={() => setVisible(true)}>
+  //           {value} ▾
+  //         </Button>
+  //       }
+  //     >
+  //       <Menu.Item onPress={() => { setValue('A'); setVisible(false); }} title="A" />
+  //       <Menu.Item onPress={() => { setValue('B'); setVisible(false); }} title="B" />
+  //       <Menu.Item onPress={() => { setValue('C'); setVisible(false); }} title="C" />
+  //     </Menu>
+  //   </View>
+  // )
   return (<>
     <TouchableOpacity style={css.selector} onPress={() => setVisible(true)}>
       <Text style={[css.text, css.bold]}>{value}</Text>
@@ -49,12 +67,12 @@ const css = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#999',
     minWidth: '100%'
   },
   text: {

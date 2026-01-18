@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from "react";
-import { View, ScrollView, Button, StyleSheet, Text, TextInput, Switch } from "react-native";
+import { View, ScrollView, StyleSheet, Text } from "react-native";
+import { TextInput, Button, Switch } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import DropDownButton from "../components/DropDownButton";
 import { EXERCISES } from "../utils/constants";
@@ -17,12 +18,12 @@ export default function WorkoutScreen({ navigation }) {
   }, [navigation]);
 
   const dispatch = useDispatch();
-  const [executions, setExecutions] = useState("1");
+  const [executions, setExecutions] = useState("3");
   const [sameRest, setSameRest] = useState(true);
-  const [restInputs, setRestInputs] = useState([""]);
+  const [restInputs, setRestInputs] = useState(["60"]);
   const [exerciseTitle, setExerciseTitle] = useState(EXERCISES[0]);
-  const [exerciseReps, setExerciseReps] = useState("");
-  const [exerciseWeight, setExerciseWeight] = useState("");
+  const [exerciseReps, setExerciseReps] = useState("12");
+  const [exerciseWeight, setExerciseWeight] = useState("0");
   const [exerciseSets, setExerciseSets] = useState({ reps: [], weight: [] });
   const [serieExercises, setSerieExercises] = useState([]);
 
@@ -65,37 +66,37 @@ export default function WorkoutScreen({ navigation }) {
     ]);
   };
 
-  const handleAddSerie = () => {
-    const totalExecutions = Number(executions) || 0;
+  // const handleAddSerie = () => {
+  //   const totalExecutions = Number(executions) || 0;
 
-    if (totalExecutions < 1 || serieExercises.length === 0) {
-      return;
-    }
+  //   if (totalExecutions < 1 || serieExercises.length === 0) {
+  //     return;
+  //   }
 
-    const restValues = restInputs
-      .slice(0, restCount)
-      .map((value) => Number(value))
-      .filter((value) => !Number.isNaN(value));
+  //   const restValues = restInputs
+  //     .slice(0, restCount)
+  //     .map((value) => Number(value))
+  //     .filter((value) => !Number.isNaN(value));
 
-    if (restCount > 0 && restValues.length !== restCount) {
-      return;
-    }
+  //   if (restCount > 0 && restValues.length !== restCount) {
+  //     return;
+  //   }
 
-    dispatch(
-      addSerie({
-        weekDay,
-        serie: {
-          executions: totalExecutions,
-          exercises: serieExercises,
-          rest: restValues,
-        },
-      })
-    );
-    setExecutions("1");
-    setSameRest(true);
-    setRestInputs([""]);
-    setSerieExercises([]);
-  };
+  //   dispatch(
+  //     addSerie({
+  //       weekDay,
+  //       serie: {
+  //         executions: totalExecutions,
+  //         exercises: serieExercises,
+  //         rest: restValues,
+  //       },
+  //     })
+  //   );
+  //   setExecutions("1");
+  //   setSameRest(true);
+  //   setRestInputs([""]);
+  //   setSerieExercises([]);
+  // };
 
   const handleRestChange = (index, value) => {
     setRestInputs((prev) => {
@@ -109,15 +110,16 @@ export default function WorkoutScreen({ navigation }) {
     if (restCount === 0) return null;
     const items = Array.from({ length: restCount });
     return (
-      <View style={[css.block]}>
-        {items.map((_, index) => (
+      <View>
+        {items.map((_, i) => (
           <TextInput
-            key={`rest-${index}`}
+            key={`rest-${i}`}
             keyboardType="numeric"
-            style={[css.input, css.w100]}
-            value={restInputs[index] || ""}
-            onChangeText={(value) => handleRestChange(index, value)}
-            placeholder={`rest ${index + 1}`}
+            style={[css.block, css.w100]}
+            value={restInputs[i] || "60"}
+            onChangeText={(value) => handleRestChange(i, value)}
+            label={`Rest time ${sameRest ? '' : i + 1}`}
+            mode="outlined"
           />
         ))}
       </View>
@@ -130,63 +132,94 @@ export default function WorkoutScreen({ navigation }) {
 
         <DropDownButton list={EXERCISES} onSelect={setExerciseTitle} />
 
-        <View style={[css.row, css.block]}>
+        <View style={[css.row, css.block, css.spaceBetween]}>
           <TextInput
+            label="Sets"
+            mode='outlined'
+            style={[css.w30]}
             keyboardType="numeric"
-            style={[css.input, css.w30]}
-            value={exerciseWeight}
-            onChangeText={setExerciseWeight}
-            placeholder="weight"
-          />
-          <TextInput
-            keyboardType="numeric"
-            style={[css.input, css.w30]}
-            value={exerciseReps}
-            onChangeText={setExerciseReps}
-            placeholder="repetitions"
-          />
-          <TextInput
-            keyboardType="numeric"
-            style={[css.input, css.w30]}
             value={executions}
-            onChangeText={setExecutions}
-            placeholder="executions"
+            error={parseInt(executions) < 1}
+            onChangeText={(t) => {
+              // mantém só números (0-9). Remove "-" automaticamente.
+              const onlyDigits = t.replace(/[^\d]/g, '');
+              setExecutions(onlyDigits);
+            }}
+          />
+          <TextInput
+            label="Repetitions"
+            mode='outlined'
+            style={[css.w30]}
+            keyboardType="numeric"
+            value={exerciseReps}
+            error={parseInt(exerciseReps) < 1}
+            onChangeText={(t) => {
+              // mantém só números (0-9). Remove "-" automaticamente.
+              const onlyDigits = t.replace(/[^\d]/g, '');
+              setExerciseReps(onlyDigits);
+            }}
+          />
+          <TextInput
+            label="Weight"
+            mode='outlined'
+            style={[css.w30]}
+            keyboardType="numeric"
+            value={exerciseWeight}
+            error={parseInt(exerciseWeight) < 0}
+            onChangeText={(t) => {
+              // mantém só números (0-9). Remove "-" automaticamente.
+              const onlyDigits = t.replace(/[^\d]/g, '');
+              setExerciseWeight(onlyDigits);
+            }}
           />
         </View>
 
-        <View style={css.block}>
-          <View style={[css.row, css.spaceBetween]}>
-            <Text style={css.label}>Rest Time</Text>
-            <View style={css.row}>
-              <Text style={css.label}>Same rest</Text>
-              <Switch value={sameRest} onValueChange={setSameRest} />
-            </View>
-          </View>
+
+        <View style={[css.row, css.block, css.spaceBetween]}>
+          {/* <Text style={css.label}>Same rest</Text> */}
+          {/* <Switch value={sameRest} onValueChange={setSameRest} /> */}
           {renderRestInputs()}
         </View>
 
-        <View style={css.block}>
-          <Button title="Add Set" onPress={handleAddSet} />
-          {exerciseSets.reps.length > 0 && (
-            <Text style={css.helperText}>
-              Sets: {exerciseSets.reps.length}
-            </Text>
-          )}
-          <Button title="Add Exercise" onPress={handleAddExercise} />
+
+        <View style={[css.w100]}>
+          <Button
+            icon="plus"
+            mode="contained"
+            style={[css.block]}
+            onPress={handleAddSet}
+            disabled={!exerciseReps || !exerciseWeight}
+          > Add exercise to the set</Button>
+          {
+            exerciseSets.reps.length > 0 && (
+              <Text style={css.helperText}> Sets: {exerciseSets.reps.length}</Text>
+            )
+          }
+          <Button
+            style={[css.block]}
+            icon="plus"
+            mode="contained"
+            onPress={handleAddExercise}
+            disabled={exerciseSets.reps.length <= 0}
+          >Add set to the workout </Button>
         </View>
 
         {serieExercises.length > 0 && (
           <View style={css.block}>
-            <Text style={css.label}>Series exercises</Text>
-            {serieExercises.map((exercise, index) => (
-              <Text key={`${exercise.title}-${index}`}>
-                {exercise.title}: {exercise.reps.length} sets
-              </Text>
-            ))}
+            <Text style={css.label}>{`${weekDay} workout`}</Text>
+            {
+              serieExercises.map((e, i) => (
+                <Text key={`${e.title}-${i}`}>
+                  {e.reps.length}x {e.title} | {e.rest || 12} reps | {restInputs || 60}s rest
+                </Text>
+              ))
+            }
           </View>
         )}
 
-        <Button title="Add Serie" onPress={handleAddSerie} />
+        {/* <Button icon="plus" mode="contained" onPress={handleAddSerie}>
+          Add Serie
+        </Button> */}
 
         {seriesForDay.length > 0 && (
           <View style={css.block}>
@@ -210,7 +243,6 @@ const css = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
-
   input: {
     flex: 1,
     padding: 12,
@@ -220,8 +252,6 @@ const css = StyleSheet.create({
     backgroundColor: '#fff',
     maxHeight: 50
   },
-
-
   label: {
     fontSize: 16,
     fontWeight: '600',
@@ -232,22 +262,20 @@ const css = StyleSheet.create({
     maxWidth: '100%',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  block: {
+    width: '100%',
     marginVertical: 8
   },
   spaceBetween: { justifyContent: 'space-between', },
-  block: {
-    gap: 8,
-    width: '100%',
-    marginBottom: 16,
-  },
-  w10: { maxWidth: '20%' },
-  w20: { maxWidth: '20%' },
-  w25: { maxWidth: '25%' },
-  w30: { maxWidth: '30%' },
-  w40: { maxWidth: '40%' },
-  w45: { maxWidth: '45%' },
-  w50: { maxWidth: '50%' },
-  w100: { maxWidth: '100%' },
+  w10: { minWidth: '20%', maxWidth: '20%' },
+  w20: { minWidth: '20%', maxWidth: '20%' },
+  w25: { minWidth: '25%', maxWidth: '25%' },
+  w30: { minWidth: '30%', maxWidth: '30%' },
+  w40: { minWidth: '40%', maxWidth: '40%' },
+  w45: { minWidth: '45%', maxWidth: '45%' },
+  w50: { minWidth: '50%', maxWidth: '50%' },
+  w100: { minWidth: '100%', maxWidth: '100%' },
   helperText: {
     color: '#555',
   },
