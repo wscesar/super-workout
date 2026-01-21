@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import DropDownButton from "../components/DropDownButton";
 import { EXERCISES } from "../utils/constants";
 import { addSerie } from "../store/workoutSlice";
+import NumberInput from "../components/NumberInput";
 
 
 export default function WorkoutScreen({ navigation }) {
@@ -30,7 +31,7 @@ export default function WorkoutScreen({ navigation }) {
 
   const dispatch = useDispatch();
   const [sameRest, setSameRest] = useState(true);
-  const [restInputs, setRestInputs] = useState(["60"]);
+  const [restInputs, setRestInputs] = useState([59]);
   const [reps, setReps] = useState(12);
   const [series, setSeries] = useState(3);
   const [weight, setWeight] = useState(10);
@@ -112,19 +113,25 @@ export default function WorkoutScreen({ navigation }) {
     return (
       <View>
         {items.map((_, i) => (
-          <TextInput
-            key={`rest-${i}`}
-            keyboardType="numeric"
-            style={[css.input, css.block, css.w100]}
-            value={restInputs[i] || "60"}
-            onChangeText={(value) => handleRestChange(i, value)}
-            label={
-              sameRest
-                ? t("workout.restTime")
-                : t("workout.restTimeIndex", { index: i + 1 })
-            }
-            mode="outlined"
+          <NumberInput
+            key={i}
+            label="Rest"
+            value={restInputs[i]}
+            onChangeText={(value) => handleRestChange(i, value.replace(/[^\d]/g, ''))}
           />
+          // <TextInput
+          //   key={`rest-${i}`}
+          //   keyboardType="numeric"
+          //   style={[css.input, css.block, css.w100]}
+          //   value={restInputs[i] || "60"}
+          //   onChangeText={(value) => handleRestChange(i, value)}
+          //   label={
+          //     sameRest
+          //       ? t("workout.restTime")
+          //       : t("workout.restTimeIndex", { index: i + 1 })
+          //   }
+          //   mode="outlined"
+          // />
         ))}
       </View>
     );
@@ -137,44 +144,25 @@ export default function WorkoutScreen({ navigation }) {
         <DropDownButton list={exerciseOptions} onSelect={setTitle} />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
-          <TextInput
-            selectionColor="#3339"
-            activeOutlineColor="#333"
-            textColor="#333"
+          <NumberInput
             label={t("workout.sets")}
-            mode='outlined'
-            style={[css.w30, css.input]}
-            keyboardType="numeric"
-            value={`${series}`}
+            value={series}
             error={series < 1}
             onChangeText={(t) => {
               setSeries(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
-          <TextInput
-            selectionColor="#3339"
-            activeOutlineColor="#333"
-            textColor="#333"
+          <NumberInput
             label={t("workout.repetitions")}
-            mode='outlined'
-            style={[css.w30, css.input]}
-            keyboardType="numeric"
             value={`${reps}`}
             error={reps < 1}
             onChangeText={(t) => {
               setReps(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
-          <TextInput
-            selectionColor="#3339"
-            activeOutlineColor="#333"
-            textColor="#333"
+          <NumberInput
             label={t("workout.weight")}
-            mode='outlined'
-            style={[css.w30, css.input]}
-            keyboardType="numeric"
             value={`${weight}`}
-            error={weight < 0}
             onChangeText={(t) => {
               setWeight(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
