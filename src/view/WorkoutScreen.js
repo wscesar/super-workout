@@ -31,40 +31,29 @@ export default function WorkoutScreen({ navigation }) {
 
   const dispatch = useDispatch();
   const [sameRest, setSameRest] = useState(true);
+  const [isDropset, setIsDropset] = useState(false);
+  const [dropAmount, setDropAmount] = useState(2);
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(12);
-  const [weight, setWeight] = useState(10);
+  const [weight, setWeight] = useState([10]);
   const [rest, setRest] = useState([60]);
   const [workout, setWorkout] = useState([]);
   const [exercise, setExercise] = useState(EXERCISES[0]);
 
-  const restCount = useMemo(() => {
-    const total = Number(sets) || 0;
-    if (total <= 1) return 0;
-    return sameRest ? 1 : total - 1;
-  }, [sets, sameRest]);
+  // const restCount = useMemo(() => {
+  //   return (sameRest || sets <= 1) ? 1 : sets - 1;
+  // }, [sets, sameRest]);
 
   const handleAddExercise = () => {
-    const seriesValue = Number(sets);
-    const repsValue = Number(reps);
-    const weightValue = Number(weight);
-
     setSets(3);
     setReps(12);
-    setWeight(0);
     setRest([60]);
+    setWeight([0]);
 
     setWorkout((prev) => {
-      console.log({ prev })
       return [
         ...prev,
-        {
-          series: seriesValue,
-          title: exercise,
-          reps: repsValue,
-          weight: weightValue,
-          rest: rest
-        },
+        { sets, exercise, reps, weight, rest }
       ]
     });
   };
@@ -109,15 +98,20 @@ export default function WorkoutScreen({ navigation }) {
     });
   };
 
+  const handleWeightChange = (index, value) => {
+    setWeight((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
   const renderRestInputs = () => {
-    if (restCount === 0) return null;
-
-    const items = Array.from({ length: restCount });
-
+    const inputs = (sameRest || sets <= 1) ? 1 : sets - 1
     return (
       <View style={[css.row, css.block]}>
         {
-          items.map((_, i) => (
+          Array.from({ length: inputs }).map((_, i) => (
             <NumberInput
               key={i}
               value={rest[i] || 60}
@@ -134,6 +128,33 @@ export default function WorkoutScreen({ navigation }) {
     );
   };
 
+  const renderDropsetInputs = () => {
+    const inputs = isDropset ? dropAmount : 1
+    return (
+      <View style={[css.row, css.block]}>
+        {isDropset && <NumberInput
+          value={dropAmount}
+          onChangeText={(value) => setDropAmount(value.replace(/[^\d]/g, ''))}
+          label="N Drops"
+        />}
+        {/* {isDropset && <DropDownButton
+          list={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+          onSelect={setDropAmount}
+        />} */}
+        {
+          Array.from({ length: inputs }).map((_, i) => (
+            <NumberInput
+              key={i}
+              value={weight[i] || 0}
+              label={isDropset ? `Drop ${i + 1}` : 'Carga'}
+              onChangeText={(value) => handleWeightChange(i, value.replace(/[^\d]/g, ''))}
+            />
+          ))
+        }
+      </View>
+    );
+  };
+
   return (
     <ScrollView>
       <View style={css.container}>
@@ -141,35 +162,35 @@ export default function WorkoutScreen({ navigation }) {
         <DropDownButton list={exerciseOptions} onSelect={setExercise} />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
-          <NumberInput
-            label={t("workout.sets")}
-            value={sets}
-            error={sets < 1}
-            onChangeText={(t) => {
-              setSets(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
-            }}
-          />
-          <NumberInput
-            label={t("workout.repetitions")}
-            value={`${reps}`}
-            error={reps < 1}
-            onChangeText={(t) => {
-              setReps(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
-            }}
-          />
-          <NumberInput
-            label={t("workout.weight")}
-            value={`${weight}`}
-            onChangeText={(t) => {
-              setWeight(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
-            }}
-          />
+          <View style={[css.col2]}>
+            <NumberInput
+              label={t("workout.sets")}
+              value={sets}
+              error={sets < 1}
+              onChangeText={(t) => { setSets(t.replace(/[^\d]/g, '')) }} // mantém só números (0-9)
+            />
+          </View>
+
+          <View style={[css.col2]}>
+            <NumberInput
+              label={t("workout.repetitions")}
+              value={`${reps}`}
+              error={reps < 1}
+              onChangeText={(t) => { setReps(t.replace(/[^\d]/g, '')) }} // mantém só números (0-9)
+            />
+          </View>
+
         </View>
 
+        <View style={[css.row, css.block, css.spaceBetween]}>
+          <Text style={css.label}>Dropset</Text>
+          <Switch value={isDropset} onValueChange={setIsDropset} />
+          {renderDropsetInputs()}
+        </View>
 
         <View style={[css.row, css.block, css.spaceBetween]}>
-          {/* <Text style={css.label}>Same rest</Text> */}
-          {/* <Switch value={sameRest} onValueChange={setSameRest} /> */}
+          <Text style={css.label}>Same rest</Text>
+          <Switch value={sameRest} onValueChange={setSameRest} />
           {renderRestInputs()}
         </View>
 
@@ -192,16 +213,37 @@ export default function WorkoutScreen({ navigation }) {
               {t("workout.dayWorkout", { day: weekDayLabel })}
             </Text>
             {
-              workout.map((e, i) => (
-                <Text key={i}>
-                  {t("workout.exerciseLine", {
-                    sets: e.series,
-                    title: t(`exercise.${e.title}`),
-                    reps: e.reps,
-                    weight: e.weight,
-                    rest: e.rest[0],
-                  })}
-                </Text>
+              workout.map((w, i) => (
+                <>
+                  {
+                    w.rest.length === 1 && (
+                      <Text key={i}>
+                        {t("workout.exerciseLine", {
+                          sets: w.sets,
+                          title: t(`exercise.${w.exercise}`),
+                          reps: w.reps,
+                          weight: w.weight[0],
+                          rest: w.rest[0],
+                        })}
+                      </Text>
+                    )
+                  }
+
+                  {
+                    w.rest.length > 1 && (
+                      <View>
+                        <Text>{w.exercise}</Text>
+                        {
+                          w.rest.map((rest, i2) => (
+                            <Text key={`${i}_${i2}`}>
+                              {i2 + 1}o {w.reps}x | {w.weight}kg | {rest}s
+                            </Text>
+                          ))
+                        }
+                      </View>
+                    )
+                  }
+                </>
               ))
             }
           </View>
@@ -250,20 +292,22 @@ const css = StyleSheet.create({
     alignItems: 'center',
     maxWidth: '100%',
     flexWrap: 'wrap',
-    gap: 8,
+    // gap: 8,
   },
   block: {
     width: '100%',
     marginVertical: 8
   },
   spaceBetween: { justifyContent: 'space-between', },
-  w10: { minWidth: '20%', maxWidth: '20%' },
+  w10: { minWidth: '10%', maxWidth: '10%' },
+  w15: { minWidth: '15%', maxWidth: '15%' },
   w20: { minWidth: '20%', maxWidth: '20%' },
   w25: { minWidth: '25%', maxWidth: '25%' },
   w30: { minWidth: '30%', maxWidth: '30%' },
-  w40: { minWidth: '40%', maxWidth: '40%' },
+  col2: { minWidth: '49%', maxWidth: '49%' },
   w45: { minWidth: '45%', maxWidth: '45%' },
   w50: { minWidth: '50%', maxWidth: '50%' },
+  w60: { minWidth: '60%', maxWidth: '60%' },
   w100: { minWidth: '100%', maxWidth: '100%' },
   helperText: {
     color: '#555',
