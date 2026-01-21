@@ -29,52 +29,41 @@ export default function WorkoutScreen({ navigation }) {
   }, [navigation, t, i18n.language, weekDayLabel]);
 
   const dispatch = useDispatch();
-  const [executions, setExecutions] = useState("3");
   const [sameRest, setSameRest] = useState(true);
   const [restInputs, setRestInputs] = useState(["60"]);
-  const [exerciseTitle, setExerciseTitle] = useState(EXERCISES[0]);
-  const [exerciseReps, setExerciseReps] = useState("12");
-  const [exerciseWeight, setExerciseWeight] = useState("0");
-  const [exerciseSets, setExerciseSets] = useState({ reps: [], weight: [] });
-  const [serieExercises, setSerieExercises] = useState([]);
+  const [reps, setReps] = useState(12);
+  const [series, setSeries] = useState(3);
+  const [weight, setWeight] = useState(10);
+  const [title, setTitle] = useState(EXERCISES[0]);
+  const [exerciseSets, setExerciseSets] = useState([]);
 
   const restCount = useMemo(() => {
-    const total = Number(executions) || 0;
+    const total = Number(series) || 0;
     if (total <= 1) return 0;
     return sameRest ? 1 : total - 1;
-  }, [executions, sameRest]);
-
-  const handleAddSet = () => {
-    const repsValue = Number(exerciseReps);
-    const weightValue = Number(exerciseWeight);
-
-    if (Number.isNaN(repsValue) || Number.isNaN(weightValue)) {
-      return;
-    }
-
-    setExerciseReps("");
-    setExerciseWeight("");
-    setExerciseSets((prev) => ({
-      reps: [...prev.reps, repsValue],
-      weight: [...prev.weight, weightValue],
-    }));
-  };
+  }, [series, sameRest]);
 
   const handleAddExercise = () => {
-    if (exerciseSets.reps.length === 0 || exerciseSets.weight.length === 0) {
-      return;
-    }
+    const seriesValue = Number(series);
+    const repsValue = Number(reps);
+    const weightValue = Number(weight);
 
-    setExerciseSets({ reps: [], weight: [] });
+    setSeries('3')
+    setReps("12");
+    setWeight("0")
 
-    setSerieExercises((prev) => [
-      ...prev,
-      {
-        title: exerciseTitle,
-        reps: exerciseSets.reps,
-        weight: exerciseSets.weight,
-      },
-    ]);
+    setExerciseSets((prev) => {
+      console.log({ prev })
+      return [
+        ...prev,
+        {
+          series: seriesValue,
+          title: title,
+          reps: repsValue,
+          weight: weightValue,
+        },
+      ]
+    });
   };
 
   // const handleAddSerie = () => {
@@ -145,7 +134,7 @@ export default function WorkoutScreen({ navigation }) {
     <ScrollView>
       <View style={css.container}>
 
-        <DropDownButton list={exerciseOptions} onSelect={setExerciseTitle} />
+        <DropDownButton list={exerciseOptions} onSelect={setTitle} />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
           <TextInput
@@ -156,11 +145,10 @@ export default function WorkoutScreen({ navigation }) {
             mode='outlined'
             style={[css.w30, css.input]}
             keyboardType="numeric"
-            value={executions}
-            error={parseInt(executions) < 1}
+            value={`${series}`}
+            error={series < 1}
             onChangeText={(t) => {
-              // mantém só números (0-9)
-              setExecutions(t.replace(/[^\d]/g, ''));
+              setSeries(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
           <TextInput
@@ -171,11 +159,10 @@ export default function WorkoutScreen({ navigation }) {
             mode='outlined'
             style={[css.w30, css.input]}
             keyboardType="numeric"
-            value={exerciseReps}
-            error={parseInt(exerciseReps) < 1}
+            value={`${reps}`}
+            error={reps < 1}
             onChangeText={(t) => {
-              // mantém só números (0-9)
-              setExerciseReps(t.replace(/[^\d]/g, ''));
+              setReps(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
           <TextInput
@@ -186,11 +173,10 @@ export default function WorkoutScreen({ navigation }) {
             mode='outlined'
             style={[css.w30, css.input]}
             keyboardType="numeric"
-            value={exerciseWeight}
-            error={parseInt(exerciseWeight) < 0}
+            value={`${weight}`}
+            error={weight < 0}
             onChangeText={(t) => {
-              // mantém só números (0-9)
-              setExerciseWeight(t.replace(/[^\d]/g, ''));
+              setWeight(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
         </View>
@@ -208,39 +194,23 @@ export default function WorkoutScreen({ navigation }) {
             icon="plus"
             mode="contained"
             style={[css.block]}
-            onPress={handleAddSet}
-            disabled={!exerciseReps || !exerciseWeight}
-          >
-            {t("workout.addExerciseToSet")}
-          </Button>
-          {
-            exerciseSets.reps.length > 0 && (
-              <Text style={css.helperText}>
-                {t("workout.setsCount", { count: exerciseSets.reps.length })}
-              </Text>
-            )
-          }
-          <Button
-            style={[css.block]}
-            icon="plus"
-            mode="contained"
             onPress={handleAddExercise}
-            disabled={exerciseSets.reps.length <= 0}
+          // disabled={!exerciseReps || !exerciseWeight}
           >
             {t("workout.addSetToWorkout")}
           </Button>
         </View>
 
-        {serieExercises.length > 0 && (
+        {exerciseSets.length > 0 && (
           <View style={css.block}>
             <Text style={css.label}>
               {t("workout.dayWorkout", { day: weekDayLabel })}
             </Text>
             {
-              serieExercises.map((e, i) => (
+              exerciseSets.map((e, i) => (
                 <Text key={`${e.title}-${i}`}>
                   {t("workout.exerciseLine", {
-                    sets: e.reps.length,
+                    sets: e.series,
                     title: t(`exercise.${e.title}`),
                     reps: e.rest || 12,
                     rest: restInputs || 60,
