@@ -1,14 +1,11 @@
 import { StyleSheet } from "react-native";
-import { TextInput, } from "react-native-paper";
-import { useTranslation } from "react-i18next";
+import { TextInput } from "react-native-paper";
 
 
 export default function NumberInput({ label, value, onChangeText }) {
-    const { t, i18n } = useTranslation();
-
     return (
         <TextInput
-            label={t(label)}
+            label={label}
             value={`${value}`}
             mode='outlined'
             textColor="#333"
@@ -17,7 +14,6 @@ export default function NumberInput({ label, value, onChangeText }) {
             activeOutlineColor="#333"
             style={[css.w30, css.input]}
             onChangeText={onChangeText}
-            // onChangeText={text => text.replace(/[^\d]/g, '')}
         />
     )
 }

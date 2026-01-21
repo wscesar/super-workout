@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { View, ScrollView, StyleSheet, Text } from "react-native";
-import { TextInput, Button, Switch } from "react-native-paper";
+import { Button, Switch } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import DropDownButton from "../components/DropDownButton";
@@ -31,37 +31,39 @@ export default function WorkoutScreen({ navigation }) {
 
   const dispatch = useDispatch();
   const [sameRest, setSameRest] = useState(true);
-  const [restInputs, setRestInputs] = useState([59]);
+  const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(12);
-  const [series, setSeries] = useState(3);
   const [weight, setWeight] = useState(10);
-  const [title, setTitle] = useState(EXERCISES[0]);
-  const [exerciseSets, setExerciseSets] = useState([]);
+  const [rest, setRest] = useState([60]);
+  const [workout, setWorkout] = useState([]);
+  const [exercise, setExercise] = useState(EXERCISES[0]);
 
   const restCount = useMemo(() => {
-    const total = Number(series) || 0;
+    const total = Number(sets) || 0;
     if (total <= 1) return 0;
     return sameRest ? 1 : total - 1;
-  }, [series, sameRest]);
+  }, [sets, sameRest]);
 
   const handleAddExercise = () => {
-    const seriesValue = Number(series);
+    const seriesValue = Number(sets);
     const repsValue = Number(reps);
     const weightValue = Number(weight);
 
-    setSeries('3')
-    setReps("12");
-    setWeight("0")
+    setSets(3);
+    setReps(12);
+    setWeight(0);
+    setRest([60]);
 
-    setExerciseSets((prev) => {
+    setWorkout((prev) => {
       console.log({ prev })
       return [
         ...prev,
         {
           series: seriesValue,
-          title: title,
+          title: exercise,
           reps: repsValue,
           weight: weightValue,
+          rest: rest
         },
       ]
     });
@@ -100,7 +102,7 @@ export default function WorkoutScreen({ navigation }) {
   // };
 
   const handleRestChange = (index, value) => {
-    setRestInputs((prev) => {
+    setRest((prev) => {
       const next = [...prev];
       next[index] = value;
       return next;
@@ -109,30 +111,25 @@ export default function WorkoutScreen({ navigation }) {
 
   const renderRestInputs = () => {
     if (restCount === 0) return null;
+
     const items = Array.from({ length: restCount });
+
     return (
-      <View>
-        {items.map((_, i) => (
-          <NumberInput
-            key={i}
-            label="Rest"
-            value={restInputs[i]}
-            onChangeText={(value) => handleRestChange(i, value.replace(/[^\d]/g, ''))}
-          />
-          // <TextInput
-          //   key={`rest-${i}`}
-          //   keyboardType="numeric"
-          //   style={[css.input, css.block, css.w100]}
-          //   value={restInputs[i] || "60"}
-          //   onChangeText={(value) => handleRestChange(i, value)}
-          //   label={
-          //     sameRest
-          //       ? t("workout.restTime")
-          //       : t("workout.restTimeIndex", { index: i + 1 })
-          //   }
-          //   mode="outlined"
-          // />
-        ))}
+      <View style={[css.row, css.block]}>
+        {
+          items.map((_, i) => (
+            <NumberInput
+              key={i}
+              value={rest[i] || 60}
+              onChangeText={(value) => handleRestChange(i, value.replace(/[^\d]/g, ''))}
+              label={
+                sameRest
+                  ? t("workout.restTime")
+                  : t("workout.restTimeIndex", { index: i + 1 })
+              }
+            />
+          ))
+        }
       </View>
     );
   };
@@ -141,15 +138,15 @@ export default function WorkoutScreen({ navigation }) {
     <ScrollView>
       <View style={css.container}>
 
-        <DropDownButton list={exerciseOptions} onSelect={setTitle} />
+        <DropDownButton list={exerciseOptions} onSelect={setExercise} />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
           <NumberInput
             label={t("workout.sets")}
-            value={series}
-            error={series < 1}
+            value={sets}
+            error={sets < 1}
             onChangeText={(t) => {
-              setSeries(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
+              setSets(t.replace(/[^\d]/g, '')); // mantém só números (0-9)
             }}
           />
           <NumberInput
@@ -189,19 +186,20 @@ export default function WorkoutScreen({ navigation }) {
           </Button>
         </View>
 
-        {exerciseSets.length > 0 && (
+        {workout.length > 0 && (
           <View style={css.block}>
             <Text style={css.label}>
               {t("workout.dayWorkout", { day: weekDayLabel })}
             </Text>
             {
-              exerciseSets.map((e, i) => (
-                <Text key={`${e.title}-${i}`}>
+              workout.map((e, i) => (
+                <Text key={i}>
                   {t("workout.exerciseLine", {
                     sets: e.series,
                     title: t(`exercise.${e.title}`),
-                    reps: e.rest || 12,
-                    rest: restInputs || 60,
+                    reps: e.reps,
+                    weight: e.weight,
+                    rest: e.rest[0],
                   })}
                 </Text>
               ))
