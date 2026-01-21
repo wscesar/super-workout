@@ -126,7 +126,7 @@ export default function WorkoutScreen({ navigation }) {
           <TextInput
             key={`rest-${i}`}
             keyboardType="numeric"
-            style={[css.block, css.w100]}
+            style={[css.input, css.block, css.w100]}
             value={restInputs[i] || "60"}
             onChangeText={(value) => handleRestChange(i, value)}
             label={
@@ -149,42 +149,48 @@ export default function WorkoutScreen({ navigation }) {
 
         <View style={[css.row, css.block, css.spaceBetween]}>
           <TextInput
+            selectionColor="#3339"
+            activeOutlineColor="#333"
+            textColor="#333"
             label={t("workout.sets")}
             mode='outlined'
-            style={[css.w30]}
+            style={[css.w30, css.input]}
             keyboardType="numeric"
             value={executions}
             error={parseInt(executions) < 1}
             onChangeText={(t) => {
-              // mantém só números (0-9). Remove "-" automaticamente.
-              const onlyDigits = t.replace(/[^\d]/g, '');
-              setExecutions(onlyDigits);
+              // mantém só números (0-9)
+              setExecutions(t.replace(/[^\d]/g, ''));
             }}
           />
           <TextInput
+            selectionColor="#3339"
+            activeOutlineColor="#333"
+            textColor="#333"
             label={t("workout.repetitions")}
             mode='outlined'
-            style={[css.w30]}
+            style={[css.w30, css.input]}
             keyboardType="numeric"
             value={exerciseReps}
             error={parseInt(exerciseReps) < 1}
             onChangeText={(t) => {
-              // mantém só números (0-9). Remove "-" automaticamente.
-              const onlyDigits = t.replace(/[^\d]/g, '');
-              setExerciseReps(onlyDigits);
+              // mantém só números (0-9)
+              setExerciseReps(t.replace(/[^\d]/g, ''));
             }}
           />
           <TextInput
+            selectionColor="#3339"
+            activeOutlineColor="#333"
+            textColor="#333"
             label={t("workout.weight")}
             mode='outlined'
-            style={[css.w30]}
+            style={[css.w30, css.input]}
             keyboardType="numeric"
             value={exerciseWeight}
             error={parseInt(exerciseWeight) < 0}
             onChangeText={(t) => {
-              // mantém só números (0-9). Remove "-" automaticamente.
-              const onlyDigits = t.replace(/[^\d]/g, '');
-              setExerciseWeight(onlyDigits);
+              // mantém só números (0-9)
+              setExerciseWeight(t.replace(/[^\d]/g, ''));
             }}
           />
         </View>
@@ -277,13 +283,7 @@ const css = StyleSheet.create({
     padding: 16,
   },
   input: {
-    flex: 1,
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: '#ddd',
     backgroundColor: '#fff',
-    maxHeight: 50
   },
   label: {
     fontSize: 16,

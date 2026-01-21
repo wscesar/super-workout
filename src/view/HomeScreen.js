@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { RadioButton } from "react-native-paper";
+import { StyleSheet, Text, View } from "react-native";
+import { RadioButton, Button } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import DropDownButton from "../components/DropDownButton";
@@ -41,23 +41,32 @@ export default function HomeScreen({ navigation }) {
       />
       <View style={css.languageBlock}>
         <Text style={css.sectionLabel}>{t("home.languageLabel")}</Text>
+
         <RadioButton.Group
-          onValueChange={(value) => i18n.changeLanguage(value)}
           value={i18n.language}
-        >
-          {languageOptions.map((option) => (
-            <RadioButton.Item
-              key={option.value}
-              label={option.label}
-              value={option.value}
-            />
-          ))}
+          onValueChange={(value) => i18n.changeLanguage(value)}>
+          {
+            languageOptions.map((option) => (
+              <RadioButton.Item
+                key={option.value}
+                label={option.label}
+                value={option.value}
+                labelStyle={{ color: "#333" }}
+                color="#333"
+                type={RadioButton.Android}
+              />
+            ))
+          }
         </RadioButton.Group>
+
       </View>
+
       <Button
+        mode="contained"
         onPress={() => navigation.navigate("Workout")}
-        title={t("home.startButton")}
-      />
+      >
+        {t("home.startButton")}
+      </Button>
       {/* {
         workouts.map((workout, i) => (
           <View key={i} id="outputWorkouts">
@@ -84,5 +93,10 @@ const css = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 8,
+  },
+
+  label: {
+    fontSize: 32,
+    color: "#333",
   },
 });
