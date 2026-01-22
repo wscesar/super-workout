@@ -21,7 +21,9 @@ export default function NumberInput({ label, value, onChangeText }) {
 const css = StyleSheet.create({
     input: {
         backgroundColor: '#fff',
-        minWidth: '100%', maxWidth: '100%'
+        width: '100%',
+        marginVertical: 8
+        // maxHeight: 60
     },
     label: {
         fontSize: 16,
