@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Modal, Button, Switch, IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +7,7 @@ import DropDownButton from "../components/DropDownButton";
 import { EXERCISES } from "../utils/constants";
 import { addSerie } from "../store/workoutSlice";
 import NumberInput from "../components/NumberInput";
+import Slider from '@react-native-community/slider';
 
 
 export default function WorkoutScreen({ navigation }) {
@@ -41,6 +42,10 @@ export default function WorkoutScreen({ navigation }) {
 
   const [isDropset, setIsDropset] = useState(false);
   const [showDropsetModal, setShowDropsetModal] = useState(false);
+
+  // useEffect(() => {
+  //   setShowDropsetModal(isDropset)
+  // }, [isDropset])
 
   const handleAddExercise = () => {
     setSets(3);
@@ -156,26 +161,13 @@ export default function WorkoutScreen({ navigation }) {
           </View>
 
           <View style={[css.row, css.block, css.spaceBetween]}>
-            <Text style={css.label}>Dropset</Text>
-            <Switch value={isDropset} onValueChange={setIsDropset} />
-            {
-              isDropset &&
-              <Button
-                mode="contained"
-                style={[css.block]}
-                onPress={() => setShowDropsetModal(true)}
-              >
-                # Update Dropset Weight #
-              </Button>
-            }
-            {
-              !isDropset &&
-              <NumberInput
-                label="Carga"
-                value={weight[0]}
-                onChangeText={(value) => handleWeightChange(0, value.replace(/[^\d]/g, ''))}
-              />
-            }
+            <Button
+              mode="contained"
+              style={[css.block]}
+              onPress={() => setShowDropsetModal(true)}
+            >
+              Definir pesos
+            </Button>
           </View>
 
           <View style={[css.row, css.block, css.spaceBetween]}>
@@ -271,33 +263,69 @@ export default function WorkoutScreen({ navigation }) {
         dismissableBackButton={true}
         style={[css.modal]}
         contentContainerStyle={css.modalContainer}
-        onDismiss={() => setShowDropsetModal(false)}
+        onDismiss={() => {
+          setShowDropsetModal(false)
+          setIsDropset(false)
+        }}
       >
         <View style={css.modalHeader}>
-          <Text style={css.modalTitle}>Dropset</Text>
+          <Text style={css.modalTitle}>Definir pesos</Text>
           <IconButton
             size={24}
             icon="close"
             onPress={() => setShowDropsetModal(false)}
           />
         </View>
-        <NumberInput
-          value={dropAmount}
-          onChangeText={(value) => setDropAmount(value.replace(/[^\d]/g, ''))}
-          label="N Drops"
-        />
-        <ScrollView>
+
+        <View style={[css.row, css.block, css.spaceBetween]}>
+          <Text style={css.label}>Dropset</Text>
+          <Switch value={isDropset} onValueChange={setIsDropset} />
+        </View>
+        <View style={[css.row, css.block, css.spaceBetween]}>
+
+
           {
-            Array.from({ length: (dropAmount || 1) }).map((_, i) => (
-              <NumberInput
-                key={i}
-                value={weight[i] || 0}
-                label={isDropset ? `Drop ${i + 1}` : 'Carga'}
-                onChangeText={(value) => handleWeightChange(i, value.replace(/[^\d]/g, ''))}
-              />
-            ))
+            !isDropset &&
+            <NumberInput
+              label="Carga"
+              value={weight[0]}
+              onChangeText={(value) => handleWeightChange(0, value.replace(/[^\d]/g, ''))}
+            />
           }
-        </ScrollView>
+          {
+            isDropset &&
+            <Slider
+              step={1}
+              style={{ width: '100%', height: 72 }}
+              value={dropAmount}
+              minimumValue={2}
+              maximumValue={6}
+              onValueChange={(value) => setDropAmount(value)}
+              minimumTrackTintColor="#fff"
+              maximumTrackTintColor="#fff"
+              renderStepNumber={true}
+            />
+          }
+        </View>
+        {
+          isDropset &&
+          <ScrollView>
+            <View style={[css.row, css.spaceBetween]}>
+              {
+                Array.from({ length: (dropAmount || 1) }).map((_, i) => (
+                  <View style={css.col2}>
+                    <NumberInput
+                      key={i}
+                      value={weight[i] || 0}
+                      label={isDropset ? `Drop ${i + 1}` : 'Carga'}
+                      onChangeText={(value) => handleWeightChange(i, value.replace(/[^\d]/g, ''))}
+                    />
+                  </View>
+                ))
+              }
+            </View>
+          </ScrollView>
+        }
       </Modal>
     </>
   )
@@ -345,7 +373,7 @@ const css = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#f2f2f2',
     justifyContent: 'flex-start',
-    height: '70%',
+    height: '100%',
     padding: 16,
   },
   modalHeader: {
