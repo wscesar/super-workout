@@ -12,6 +12,7 @@ const resources = {
         languagePortuguese: "Portuguese",
       },
       workout: {
+        summary: 'Workout Summary:',
         title: "{{day}} workout",
         sets: "Sets",
         repetitions: "Repetitions",
@@ -56,6 +57,7 @@ const resources = {
         languagePortuguese: "Português",
       },
       workout: {
+        summary: 'Resumo do Treino:',
         title: "Treino de {{day}}",
         sets: "Séries",
         repetitions: "Repetições",

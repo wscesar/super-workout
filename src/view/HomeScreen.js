@@ -35,10 +35,10 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={css.container}>
-      <DropDownButton
+      {/* <DropDownButton
         list={weekOptions}
         onSelect={(day) => dispatch(setWeekDay(day))}
-      />
+      /> */}
       <View style={css.languageBlock}>
         <Text style={css.sectionLabel}>{t("home.languageLabel")}</Text>
 

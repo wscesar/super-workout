@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Modal, Button, Switch, IconButton } from "react-native-paper";
+import { Modal, Button, Switch, IconButton, TextInput, Divider } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import DropDownButton from "../components/DropDownButton";
@@ -38,20 +38,17 @@ export default function WorkoutScreen({ navigation }) {
   const [weight, setWeight] = useState([10]);
   const [rest, setRest] = useState([60]);
   const [workout, setWorkout] = useState([]);
-  const [exercise, setExercise] = useState(EXERCISES[0]);
+  const [exercise, setExercise] = useState('');
 
   const [isDropset, setIsDropset] = useState(false);
   const [showDropsetModal, setShowDropsetModal] = useState(false);
-
-  // useEffect(() => {
-  //   setShowDropsetModal(isDropset)
-  // }, [isDropset])
 
   const handleAddExercise = () => {
     setSets(3);
     setReps(12);
     setRest([60]);
     setWeight([0]);
+    setExercise('')
 
     setWorkout((prev) => {
       return [
@@ -137,7 +134,18 @@ export default function WorkoutScreen({ navigation }) {
       <ScrollView>
         <View style={css.container}>
 
-          <DropDownButton list={exerciseOptions} onSelect={setExercise} />
+          {/* <DropDownButton list={exerciseOptions} onSelect={setExercise} /> */}
+          <TextInput
+            label='exercicio'
+            value={exercise}
+            mode='outlined'
+            textColor="#333"
+            keyboardType="numeric"
+            selectionColor="#3339"
+            activeOutlineColor="#333"
+            style={[css.input]}
+            onChangeText={setExercise}
+          />
 
           <View style={[css.row, css.block, css.spaceBetween]}>
             <View style={[css.col2]}>
@@ -183,52 +191,45 @@ export default function WorkoutScreen({ navigation }) {
               mode="contained"
               style={[css.block]}
               onPress={handleAddExercise}
-            // disabled={!exerciseReps || !exerciseWeight}
+              disabled={!exercise}
             >
               {t("workout.addSetToWorkout")}
             </Button>
           </View>
 
-          {workout.length > 0 && (
-            <View style={css.block}>
-              <Text style={css.label}>
-                {t("workout.dayWorkout", { day: weekDayLabel })}
-              </Text>
-              {
-                workout.map((w, i) => (
-                  <>
-                    {
-                      w.rest.length === 1 && (
-                        <Text key={i}>
-                          {t("workout.exerciseLine", {
-                            sets: w.sets,
-                            title: t(`exercise.${w.exercise}`),
-                            reps: w.reps,
-                            weight: w.weight[0],
-                            rest: w.rest[0],
-                          })}
-                        </Text>
-                      )
-                    }
-                    {
-                      w.rest.length > 1 && (
-                        <View>
-                          <Text>{w.exercise}</Text>
-                          {
-                            w.rest.map((rest, i2) => (
-                              <Text key={`${i}_${i2}`}>
-                                {i2 + 1}o {w.reps}x | {w.weight}kg | {rest}s
-                              </Text>
-                            ))
-                          }
-                        </View>
-                      )
-                    }
-                  </>
-                ))
-              }
-            </View>
-          )}
+          {
+            workout.length > 0 && (
+              <View style={css.block}>
+                <Text style={css.label}>{t("workout.summary")}</Text>
+                {
+                  workout.map((w, i) => (
+                    <>
+                      {
+                        w.weight.length >= 0 && (
+                          <>
+                            <View style={[css.block]}>
+                              <Text>Exercicio: {w.exercise}</Text>
+                              {
+                                (Array.from(
+                                  { length: w.weight.length > 1 ? w.weight.length : w.sets }
+                                )).map((_, i2) => (
+                                  <Text key={`${i}_${i2}`}>
+                                    Execucao {i2 + 1}::: {w.reps}x {parseInt(w.weight[i2] || w.weight[i])}kg
+                                  </Text>
+                                ))
+                              }
+                              <Text>Descanso: {w.rest[i]}s</Text>
+                            </View>
+                            <Divider />
+                          </>
+                        )
+                      }
+                    </>
+                  ))
+                }
+              </View>
+            )
+          }
 
           {
             /*
@@ -282,8 +283,6 @@ export default function WorkoutScreen({ navigation }) {
           <Switch value={isDropset} onValueChange={setIsDropset} />
         </View>
         <View style={[css.row, css.block, css.spaceBetween]}>
-
-
           {
             !isDropset &&
             <NumberInput
@@ -312,10 +311,11 @@ export default function WorkoutScreen({ navigation }) {
           <ScrollView>
             <View style={[css.row, css.spaceBetween]}>
               {
-                Array.from({ length: (dropAmount || 1) }).map((_, i) => (
-                  <View style={css.col2}>
+                Array.from(
+                  { length: (dropAmount || 1) }
+                ).map((_, i) => (
+                  <View key={i} style={css.col2}>
                     <NumberInput
-                      key={i}
                       value={weight[i] || 0}
                       label={isDropset ? `Drop ${i + 1}` : 'Carga'}
                       onChangeText={(value) => handleWeightChange(i, value.replace(/[^\d]/g, ''))}
