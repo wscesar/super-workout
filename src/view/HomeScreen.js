@@ -30,7 +30,7 @@ export default function HomeScreen({ navigation }) {
   }, [dispatch]);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: t("home.title") });
+    navigation.setOptions({ title: 't("home.title")' });
   }, [navigation, t, i18n.language]);
 
   return (

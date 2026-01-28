@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-paper";
 
 
-export default function NumberInput({ label, value, onChangeText }) {
+export default function NumberInput({ label, value, onChangeText, disabled }) {
     return (
         <TextInput
             label={label}
@@ -14,6 +14,7 @@ export default function NumberInput({ label, value, onChangeText }) {
             activeOutlineColor="#333"
             style={[css.input]}
             onChangeText={onChangeText}
+            disabled={disabled}
         />
     )
 }

@@ -10,6 +10,9 @@ import WorkoutScreen from './src/view/WorkoutScreen';
 import HomeScreen from './src/view/HomeScreen';
 import { store } from "./src/store/store";
 import "./src/i18n";
+import DropsetScreen from './src/view/DropsetScreen';
+import RestFormScreen from './src/view/RestFormScreen';
+import SummaryScreen from './src/view/SummaryScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -24,9 +27,12 @@ export default function App() {
           <Provider store={store}>
             <PaperProvider>
               <NavigationContainer>
-                <Stack.Navigator initialRouteName='Home'>
-                  <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Navigator initialRouteName='Workout'>
+                  {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
                   <Stack.Screen name="Workout" component={WorkoutScreen} />
+                  <Stack.Screen name="WeightFormScreen" component={DropsetScreen} />
+                  <Stack.Screen name="RestFormScreen" component={RestFormScreen} />
+                  <Stack.Screen name="SummaryScreen" component={SummaryScreen} />
                 </Stack.Navigator>
               </NavigationContainer>
             </PaperProvider>
