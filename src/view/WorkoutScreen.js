@@ -1,76 +1,67 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Switch, Text, TextInput } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import NumberInput from "../components/NumberInput";
-import { set_title, set_reps, set_sets } from "../store/exerciseSlice";
+import { set_title } from "../store/exerciseSlice";
 
 
 export default function WorkoutScreen({ navigation }) {
-  const { t, i18n } = useTranslation();
-  const [title, setTitle] = useState('Supino');
-  const [sets, setSets] = useState(4);
-  const [reps, setReps] = useState(12);
-
   const dispatch = useDispatch();
-  const exercise = useSelector((state) => state.exercise);
-
+  const { t, i18n } = useTranslation();
+  const [isSuperset, setIsSuperset] = useState(false);
+  const superset = useSelector((state) => state.exercise.superset);
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: '1 de 4: Exercicio, Séries e Repetições' });
   }, [navigation, t, i18n.language]);
 
-
   return (
     <View style={[css.container, css.spaceBetween]}>
 
-      <View style={[]}>
+      <View>
         <TextInput
-          label={'exercicio'}
-          value={title}
+          label={'Exercicio'}
+          value={superset[0].title}
           mode='outlined'
           textColor="#333"
           selectionColor="#3339"
           activeOutlineColor="#333"
-          style={[css.input]}
-          onChangeText={setTitle}
+          style={[css.input, css.block]}
+          onChangeText={title => {
+            dispatch(set_title({ i: 0, title }))
+          }}
         />
 
         <View style={[css.row, css.block, css.spaceBetween]}>
-          <View style={[css.col2]}>
-            <NumberInput
-              label={t("workout.sets")}
-              value={sets}
-              error={sets < 1}
-              onChangeText={(t) => { setSets(t.replace(/[^\d]/g, '')) }} // mantém só números (0-9)
-            />
-          </View>
-
-          <View style={[css.col2]}>
-            <NumberInput
-              label={t("workout.repetitions")}
-              value={`${reps}`}
-              error={reps < 1}
-              onChangeText={(t) => { setReps(t.replace(/[^\d]/g, '')) }} // mantém só números (0-9)
-            />
-          </View>
-
+          <Text style={css.label}>Habilitar Super Série</Text>
+          <Switch value={isSuperset} onValueChange={setIsSuperset} />
         </View>
+
+        <View style={[css.row, css.block, css.spaceBetween]}>
+          {isSuperset && <TextInput
+            label={'Exercicio 2'}
+            value={superset[1]?.title || ''}
+            mode='outlined'
+            textColor="#333"
+            selectionColor="#3339"
+            activeOutlineColor="#333"
+            style={[css.input, css.block]}
+            onChangeText={title => {
+              dispatch(set_title({ i: 1, title: title }))
+            }}
+          />}
+        </View>
+
       </View>
 
-      <View style={[css.row, css.block, css.spaceBetween]}>
-        <Button mode="contained" style={[css.block]} onPress={
-          () => {
-            dispatch(set_title(title));
-            dispatch(set_reps(reps));
-            dispatch(set_sets(sets));
-            navigation.navigate('WeightFormScreen');
-          }
+      <Button mode="contained" style={[css.block]} onPress={() => navigation.navigate('WeightFormScreen')}
+        disabled={
+          !isSuperset && !superset[0]?.title ||
+          isSuperset && (!superset[0]?.title || !superset[1]?.title)
         }>
-          DEFINIR PESOS
-        </Button>
-      </View>
+        DEFINIR PESOS
+      </Button>
     </View>
   )
 }
@@ -84,8 +75,9 @@ const css = StyleSheet.create({
     backgroundColor: '#fff',
   },
   label: {
+    color: '#333',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   row: {
     flexDirection: 'row',

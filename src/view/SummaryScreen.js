@@ -1,126 +1,85 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Modal, Button, Switch, IconButton, TextInput, Divider } from "react-native-paper";
+import { useLayoutEffect } from "react";
+import { View, ScrollView, StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import NumberInput from "../components/NumberInput";
-
 
 
 export default function SummaryScreen({ navigation }) {
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const exercise = useSelector((state) => state.exercise);
+  const superset = useSelector((state) => state.exercise.superset);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'teste', });
+    navigation.setOptions({ title: 'Resumoo do treino', });
   }, [navigation, t, i18n.language]);
 
-  const dispatch = useDispatch();
-  const [rest, setRest] = useState([30, 60, 90]);
-  const exercise = useSelector((state) => state.exercise);
-
-
-
-  const [workout, setWorkout] = useState({
-    rest: [...rest],
-    list: []
-  });
-
-
-
-
-  const addExercise = () => {
-    setWorkout({
-      rest: [...rest],
-      list: [
-        ...(workout.list || []),
-        {
-          // exercise: exercise,
-          // title: exercise,
-          // sets: sets,
-          // reps: reps,
-          // weight: [...weight]
-        }
-      ]
-    })
-  }
 
   return (
     <View style={css.container}>
-      <Text>{JSON.stringify(exercise)}</Text>
-
-      <View style={css.block}>
-        {
-          [...exercise.rest, null].map((time, timeIndex) => (
-
-            <View key={timeIndex} style={[css.block]}>
-              {/* {
-                workout.list && workout.list.map((workoutItem, i) => (
-                  <View key={i}>
-
-                    {exercise.weight.map((weight, i) => (
-                      <View key={i} >
-                        <View style={[css.row,]}>
-
-                          <View style={[css.col4, css]}>
-                            <Text>
-                              {weight}kg
-                            </Text>
-                          </View >
-
-                          <View style={[]}>
-                            <Text>
-                              {workoutItem.title}
-                            </Text>
-                          </View >
-
-
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                ))
-              } */}
-
-              <View>
-                {exercise.weight.map((weight, i) => (
-                  <View key={i} >
-                    <View style={[css.row]}>
-                      <View style={[css.col4]}>
-                        <Text>{weight}kg</Text>
-                      </View >
-                      <View>
-                        <Text>{exercise.title}</Text>
-                      </View >
-                    </View>
-                  </View>
-                ))}
-              </View>
-
-              <View style={[css.row, css.end, css.block]}>
-                {workout.rest[timeIndex] && <Text>Descanso {time}s</Text>}
-              </View>
-
-            </View>
-
-          ))
-        }
-      </View>
-
-      {/* {seriesForDay.length > 0 && (
+      <ScrollView>
         <View style={css.block}>
-          <Text style={css.label}>
-            {t("workout.seriesForDay", { day: weekDayLabel })}
-          </Text>
-          {seriesForDay.map((serie, index) => (
-            <Text key={`serie-${index}`}>
-              {t("workout.serieLine", {
-                index: index + 1,
-                count: serie.exercises.length,
-              })}
-            </Text>
-          ))}
+          {
+            [...exercise.rest, null].map((time, timeIndex) => (
+
+              <View key={timeIndex} style={[css.block]}>
+                <View style={[css.block]}>
+                  <Text style={[css.bold]}>{timeIndex + 1}ª Série</Text>
+                </View>
+                {
+                  superset.map((exercise, i) => (
+                    <View key={i}>
+                      <View style={[css.row, css.center, css.th]}>
+                        <Text style={[css.bold]}>{exercise.title}</Text>
+                      </View>
+
+                      {
+                        exercise.isDropset &&
+                        exercise.drop.map((drop, i2) => (
+                          <View style={[css.row, (i2 % 2 === 0 ? css.even : css.odd)]} key={i2}>
+                            <View style={[css.col2, css.center]}>
+                              <Text>{drop.reps}x</Text>
+                            </View >
+                            <View style={[css.col2, css.center]}>
+                              <Text>{drop.weight}kg</Text>
+                            </View >
+                          </View>
+                        ))
+                      }
+
+                      {
+                        !exercise.isDropset &&
+                        Array.from({ length: exercise.dropAmount }).map((_, i2) => (
+                          <View style={[css.row, (i2 % 2 === 0 ? css.even : css.odd)]} key={i2}>
+                            <View style={[css.col2, css.center]}>
+                              <Text>{exercise.drop[i2].reps}x</Text>
+                            </View >
+                            <View style={[css.col2, css.center]}>
+                              <Text>{exercise.drop[i2].weight}kg</Text>
+                            </View >
+                          </View>
+                        ))
+                      }
+
+                    </View>
+                  ))
+                }
+                {
+                  !isNaN(parseInt(time)) &&
+                  <View style={[css.row, css.end, css.tf]}>
+                    {
+                      time > 0
+                        ? <Text>Descanso {time}s</Text>
+                        : <Text>Sem Descanso</Text>
+                    }
+                  </View>
+                }
+              </View>
+
+            ))
+          }
         </View>
-      )} */}
+      </ScrollView>
     </View>
   )
 }
@@ -146,26 +105,22 @@ const css = StyleSheet.create({
     flexWrap: 'wrap',
     width: '100%',
     minWidth: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingVertical: 3,
+    paddingHorizontal: 16
   },
   block: {
     width: '100%',
     marginVertical: 8
   },
+  bold: {
+    fontWeight: 600
+  },
   spaceBetween: { justifyContent: 'space-between', },
-  col1: { minWidth: '100%', maxWidth: '100%' },
-  col2: { minWidth: '49%', maxWidth: '49%' },
-  col3: { minWidth: '33%', maxWidth: '33%' },
-  col4: { minWidth: '24%', maxWidth: '24%' },
-  overlay: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#0009',
-    justifyContent: 'flex-end',
-  },
-  modal: {
-    justifyContent: 'flex-end',
-  },
+  col1: { width: '100%', },
+  col2: { width: '49%', },
+  col3: { width: '33%', },
+  col4: { width: '24%', },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -174,24 +129,16 @@ const css = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  modalContainer: {
-    backgroundColor: '#f2f2f2',
-    justifyContent: 'flex-start',
-    height: '100%',
-    padding: 16,
-  },
-  modalHeader: {
-    marginBottom: 16,
-    paddingBottom: 8,
+  even: { backgroundColor: '#fff' },
+  odd: { backgroundColor: '#eee' },
+  th: { backgroundColor: '#ccc' },
+  tf: {
+    // backgroundColor: '#ddd',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderBottomColor: '#ccc',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
   },
-  modalTitle: {
-    fontSize: 18,
-    color: '#333',
-    fontWeight: 600
-  },
+
 });

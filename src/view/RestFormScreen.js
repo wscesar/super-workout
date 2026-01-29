@@ -11,7 +11,7 @@ import { set_rest } from "../store/exerciseSlice";
 export default function RestFormScreen({ navigation }) {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const exercise = useSelector((state) => state.exercise);
+  const superset = useSelector((state) => state.exercise.superset);
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: '3 de 4: Intervalos de descanso' });
@@ -19,6 +19,7 @@ export default function RestFormScreen({ navigation }) {
 
   const [sameRest, setSameRest] = useState(false);
   const [rest, setRest] = useState([30, 60, 90]);
+  const [sets, setSets] = useState(4);
 
   const handleRestChange = (i, value) => {
     setRest((prev) => {
@@ -30,17 +31,22 @@ export default function RestFormScreen({ navigation }) {
 
   return (
     <View style={css.container}>
-      {/* <Text>{JSON.stringify(exercise)}</Text> */}
       <View>
+        <NumberInput
+          label={t("workout.sets")}
+          value={sets}
+          error={sets < 1}
+          onChangeText={(t) => { setSets(t.replace(/[^\d]/g, '')) }} // mantém só números (0-9)
+        />
         <View style={[css.row, css.block, css.spaceBetween]}>
-          <Text style={css.label}>Same rest</Text>
-          <Switch value={sameRest} onValueChange={setSameRest} />
+          <Text style={css.label}>Descanso entre as séries</Text>
+          {/* <Switch value={sameRest} onValueChange={setSameRest} /> */}
         </View>
 
         <View style={[css.block]}>
           {
             Array
-              .from({ length: exercise.sets - 1 })
+              .from({ length: sets - 1 })
               .map((_, i) => (
                 <NumberInput
                   key={i}
