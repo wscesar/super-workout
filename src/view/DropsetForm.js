@@ -25,16 +25,16 @@ export default function DropsetForm({ exercise }) {
     return (
         <>
             <View style={[css.col1, css.center]}>
-                <Text style={[css.label]}>{exercise}</Text>
+                <Text style={[css.bold]}>{exercise}</Text>
             </View>
 
             <View style={[css.col1]}>
-                <Text style={[css.label]}>Repetições</Text>
+                <Text style={[css.bold]}>Repetições</Text>
                 <NumberInput label="" value={reps} onChangeText={setReps} />
             </View>
 
             <View style={[css.row, css.block, css.spaceBetween]}>
-                <Text style={css.label}>Ativar Dropset</Text>
+                <Text style={css.bold}>Ativar Dropset</Text>
                 <Switch value={isDropset} onValueChange={setIsDropset} />
             </View>
 

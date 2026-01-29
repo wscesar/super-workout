@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { View, StyleSheet, Text, ScrollView, Switch } from "react-native";
+import { View, Text, ScrollView, Switch } from "react-native";
 import { Button, } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import NumberInput from "../components/NumberInput";
 import Slider from '@react-native-community/slider';
 import { set_drop, set_dropAmount, set_isDropset } from "../store/exerciseSlice";
+import { css } from "../utils/styles";
 
 
 export default function DropsetScreen({ navigation }) {
@@ -49,17 +50,19 @@ export default function DropsetScreen({ navigation }) {
   };
 
   return (
-    <View style={[css.container, css.spaceBetween]}>
+    <View style={[css.spaceBetween, { flex: 1 }]}>
       <ScrollView style={{ maxHeight: '90%' }}>
 
-        <View>
+        <View style={[css.container, css.spaceBetween]}>
           {
             superset.map((exercise, i) => (
-              <View key={i} style={[css.mb32]}>
-                <View style={[css.row, css.spaceBetween, css.center]}>
-                  <Text style={[css.label]}>{exercise.title}</Text>
-                  <View style={[css.row, css.col3, css.end]}>
-                    <Text style={css.label}>Dropset</Text>
+              <View key={i} style={[css.mb(16)]}>
+
+                <View style={[css.row, css.center, css.spaceBetween]}>
+                  <Text style={[css.bold]}>{exercise.title}</Text>
+
+                  <View style={[css.row, css.col2, css.center, css.end]}>
+                    <Text style={css.bold}>Dropset</Text>
                     <Switch
                       style={{ marginTop: 6, marginLeft: 16 }}
                       value={exercise.isDropset}
@@ -86,9 +89,7 @@ export default function DropsetScreen({ navigation }) {
 
                   }
 
-                  <View style={[
-                    exercise.isDropset ? css.col1 : css.col2,
-                  ]}>
+                  <View style={[exercise.isDropset ? css.col1 : css.col2,]}>
                     <NumberInput
                       label="Repetições"
                       value={drop[i] && drop[i][0]?.reps || 0}
@@ -145,7 +146,7 @@ export default function DropsetScreen({ navigation }) {
 
             {
               false && !isDropset &&
-              <View style={[css.row, css.block, css.spaceBetween]}>
+              <View style={[css.row, css.col1, css.spaceBetween]}>
                 <View style={[css.col1]}>
                   <NumberInput
                     label="Peso (kg)"
@@ -163,68 +164,22 @@ export default function DropsetScreen({ navigation }) {
 
         </View>
       </ScrollView>
-
-      <Button
-        mode="contained"
-        style={[css.block]}
-        onPress={() => {
-          drop.forEach((currentDrop, exerciseIndex) => {
-            dispatch(set_drop({
-              i: exerciseIndex,
-              drop: currentDrop
-            }))
-          })
-          navigation.navigate('RestFormScreen');
-        }}>
-        Ir Para Descanso
-      </Button>
+      <View style={[css.ml(16), css.mr(16), css.mb(16)]}>
+        <Button
+          mode="contained"
+          onPress={() => {
+            drop.forEach((currentDrop, exerciseIndex) => {
+              dispatch(set_drop({
+                i: exerciseIndex,
+                drop: currentDrop
+              }))
+            })
+            navigation.navigate('RestFormScreen');
+          }}>
+          Ir Para Descanso
+        </Button>
+      </View>
     </View>
 
   )
 }
-
-const css = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  input: {
-    backgroundColor: '#fff',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    alignItems: 'center'
-  },
-  block: {
-    width: '100%',
-    marginVertical: 8
-  },
-  mb32: {
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
-    marginBottom: 48,
-    paddingBottom: 16
-  },
-  center: {
-    alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  end: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  col1: { width: '100%' },
-  col2: { width: '49%' },
-  col3: { width: '32%' },
-  col4: { width: '24%' },
-  disabled: { opacity: .3 },
-  spaceAround: { justifyContent: 'space-around', },
-  spaceBetween: { justifyContent: 'space-between', },
-  hide: { display: 'none', },
-});
