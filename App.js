@@ -13,6 +13,7 @@ import "./src/i18n";
 import DropsetScreen from './src/view/DropsetScreen';
 import RestFormScreen from './src/view/RestFormScreen';
 import SummaryScreen from './src/view/SummaryScreen';
+import AuthScreen from './src/view/AuthScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -27,8 +28,8 @@ export default function App() {
           <Provider store={store}>
             <PaperProvider>
               <NavigationContainer>
-                <Stack.Navigator initialRouteName='Workout'>
-                  {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+                <Stack.Navigator initialRouteName='Auth'>
+                  <Stack.Screen name="Auth" component={AuthScreen} />
                   <Stack.Screen name="Workout" component={WorkoutScreen} />
                   <Stack.Screen name="WeightFormScreen" component={DropsetScreen} />
                   <Stack.Screen name="RestFormScreen" component={RestFormScreen} />
