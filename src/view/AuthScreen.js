@@ -1,33 +1,34 @@
-import { useState } from "react";
-import { TextInput } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, TextInput } from "react-native";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { Button } from "react-native-web";
 import { signIn, signUp } from "../utils/auth";
 import { css } from "../utils/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "../store/authSlice";
 
 
 export default function AuthScreen({ navigation }) {
+    const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsloading] = useState(false);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+    useEffect(() => {
+        isLoggedIn && navigation.navigate('Workout');
+    }, [isLoggedIn]);
 
     async function authHandler(email, password) {
         setIsloading(true);
 
         try {
-            await signIn(email, password);
+            const response = await signIn(email, password);
+            dispatch(login(response.data));
         } catch (error) {
-            console.log('Authentication failed. Please try again.');
+            Alert.alert('Authentication failed. Please try again.');
         }
-
-        setIsloading(false);
-
-        if (isLoading) {
-            return <Text>...</Text>;
-        }
-
-        navigation.navigate('Workout');
     }
 
     return (
@@ -39,6 +40,8 @@ export default function AuthScreen({ navigation }) {
             <TextInput onChangeText={setPassword} />
 
             <Button title="Login" onPress={() => authHandler(email, password)} />
+
+            <Button title="Logout" onPress={() => dispatch(logout())} />
         </View>
     )
 }

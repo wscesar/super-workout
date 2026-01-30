@@ -32,13 +32,11 @@ const exerciseSlice = createSlice({
 
     set_isDropset(state, action) {
       const { i, isDropset } = action.payload
-      console.log({i, isDropset})
       state.superset[i].isDropset = isDropset
     },
 
     set_dropAmount(state, action) {
       const { i, dropAmount } = action.payload
-      console.log({i, dropAmount})
       state.superset[i].dropAmount = dropAmount
     },
 

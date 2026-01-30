@@ -18,7 +18,6 @@ export default function DropsetScreen({ navigation }) {
   const superset = useSelector((state) => state.exercise.superset);
 
   useEffect(() => {
-    console.log({ superset })
     const defaultDropValue = [
       { weight: 30, reps: 12, rest: 0 },
       { weight: 20, reps: 12, rest: 0 },
