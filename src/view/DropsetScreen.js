@@ -33,7 +33,7 @@ export default function DropsetScreen({ navigation }) {
   }, []);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: '2 de 4: Peso e Repetição' });
+    navigation.setOptions({ title: '2 de 4' });
   }, [navigation, t, i18n.language]);
 
   const handleWeight = (i, i2, weight, reps) => {

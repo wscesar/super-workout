@@ -15,7 +15,7 @@ export default function RestFormScreen({ navigation }) {
   const superset = useSelector((state) => state.exercise.superset);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: '3 de 4: Intervalos de descanso' });
+    navigation.setOptions({ title: '3 de 4' });
   }, [navigation, t, i18n.language]);
 
   const [sameRest, setSameRest] = useState(false);

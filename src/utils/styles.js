@@ -5,6 +5,10 @@ export const css = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  box: {
+    padding: 16,
+  },
+  
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -31,6 +35,8 @@ export const css = StyleSheet.create({
   mt: (v) => ({ marginTop: v }),
   ml: (v) => ({ marginLeft: v }),
   mr: (v) => ({ marginRight: v }),
+  bg: (v) => ({ backgroundColor: v }),
+  gap: (v) => ({gap: v}),
   col1: { width: '100%' },
   col2: { width: '49%' },
   col3: { width: '32%' },
