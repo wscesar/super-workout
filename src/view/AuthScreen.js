@@ -32,7 +32,6 @@ export default function AuthScreen() {
 
   return (
     <View style={[css.container]}>
-
       <View style={[css.col1, css.box, css.gap(24), { backgroundColor: '#fff' }]}>
 
         <Text style={[css.bold, css.center]}>

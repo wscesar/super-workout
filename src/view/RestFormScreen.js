@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import NumberInput from "../components/NumberInput";
 import { set_rest } from "../store/exerciseSlice";
 import { css } from "../utils/styles";
+import { SCREEN } from "../utils/constants";
 
 
 
@@ -67,7 +68,7 @@ export default function RestFormScreen({ navigation }) {
       <Button mode="contained" style={[css.col1]}
         onPress={() => {
           dispatch(set_rest(rest));
-          navigation.navigate('SummaryScreen');
+          navigation.navigate(SCREEN.Summary);
         }}>
         RESUMO DO TREINO
       </Button>

@@ -7,14 +7,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import AppLoading from 'expo-app-loading';
 
+import HomeScreen from './src/view/HomeScreen';
 import WorkoutScreen from './src/view/WorkoutScreen';
 import DropsetScreen from './src/view/DropsetScreen';
 import RestFormScreen from './src/view/RestFormScreen';
 import SummaryScreen from './src/view/SummaryScreen';
 import AuthScreen from './src/view/AuthScreen';
+
 import { store } from "./src/store/store";
-import "./src/i18n";
 import { logout } from './src/store/authSlice';
+import { SCREEN } from './src/utils/constants';
+import "./src/i18n";
 
 
 const Stack = createNativeStackNavigator();
@@ -37,11 +40,12 @@ function NavStack() {
   };
 
   return (
-    <Stack.Navigator initialRouteName='Workout' options={options}>
-      <Stack.Screen options={options} name="Workout" component={WorkoutScreen} />
-      <Stack.Screen options={options} name="WeightFormScreen" component={DropsetScreen} />
-      <Stack.Screen options={options} name="RestFormScreen" component={RestFormScreen} />
-      <Stack.Screen options={options} name="SummaryScreen" component={SummaryScreen} />
+    <Stack.Navigator initialRouteName={SCREEN.Workout} options={options}>
+      <Stack.Screen options={options} name={SCREEN.Home} component={HomeScreen} />
+      <Stack.Screen options={options} name={SCREEN.Workout} component={WorkoutScreen} />
+      <Stack.Screen options={options} name={SCREEN.WeightForm} component={DropsetScreen} />
+      <Stack.Screen options={options} name={SCREEN.RestForm} component={RestFormScreen} />
+      <Stack.Screen options={options} name={SCREEN.Summary} component={SummaryScreen} />
     </Stack.Navigator>
   )
 }

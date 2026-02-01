@@ -6,11 +6,13 @@ const authSlice = createSlice({
         idToken: '',
         refreshToken: '',
         isLoggedIn: false,
+        localId: ''
     },
     reducers: {
         login(state, action) {
-            const { idToken, refreshToken } = action.payload;
+            const { idToken, refreshToken, localId } = action.payload;
             state.idToken = idToken;
+            state.localId = localId;
             state.refreshToken = refreshToken;
             state.isLoggedIn = true;
 

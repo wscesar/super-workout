@@ -1,18 +1,40 @@
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { View, ScrollView, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { css } from "../utils/styles";
+import axios from "axios";
+import { Button } from "react-native-paper";
+import { SCREEN } from "../utils/constants";
 
 export default function SummaryScreen({ navigation }) {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const exercise = useSelector((state) => state.exercise);
   const superset = useSelector((state) => state.exercise.superset);
+  const token = useSelector((state) => state.auth.idToken);
+  const userId = useSelector((state) => state.auth.localId);
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: 'Resumoo do treino', });
   }, [navigation, t, i18n.language]);
+
+  const saveWorkout = () => {
+    const url = 'https://super-workout-10-default-rtdb.firebaseio.com/workouts.json?auth=' + token;
+    const payload = {
+      userId: userId,
+      workout: exercise
+    }
+
+    try {
+      axios
+        .post(url, payload)
+        .then(() => navigation.navigate(SCREEN.Home))
+
+    } catch (error) {
+      alert('erro')
+    }
+  }
 
 
   return (
@@ -78,6 +100,9 @@ export default function SummaryScreen({ navigation }) {
           ))
         }
       </View>
+      <Button
+        onPress={saveWorkout}
+      >Salvar treino</Button>
     </ScrollView>
   )
 }

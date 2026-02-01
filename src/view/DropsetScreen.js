@@ -7,6 +7,7 @@ import NumberInput from "../components/NumberInput";
 import Slider from '@react-native-community/slider';
 import { set_drop, set_dropAmount, set_isDropset } from "../store/exerciseSlice";
 import { css } from "../utils/styles";
+import { SCREEN } from "../utils/constants";
 
 
 export default function DropsetScreen({ navigation }) {
@@ -173,7 +174,7 @@ export default function DropsetScreen({ navigation }) {
                 drop: currentDrop
               }))
             })
-            navigation.navigate('RestFormScreen');
+            navigation.navigate(SCREEN.RestForm);
           }}>
           Ir Para Descanso
         </Button>

@@ -17,3 +17,12 @@ export const EXERCISES = [
   "shoulderPress",
   "legPress",
 ];
+
+export const SCREEN = {
+  Home: 'Home',
+  Workout: 'Workout',
+  WeightForm: 'WeightForm',
+  RestForm: 'RestForm',
+  Summary: 'Summary',
+}
+

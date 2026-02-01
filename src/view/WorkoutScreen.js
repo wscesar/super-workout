@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { set_title } from "../store/exerciseSlice";
 import { css } from "../utils/styles";
+import { SCREEN } from "../utils/constants";
 
 
 export default function WorkoutScreen({ navigation }) {
@@ -56,7 +57,7 @@ export default function WorkoutScreen({ navigation }) {
 
       </View>
 
-      <Button mode="contained" style={[css.col1]} onPress={() => navigation.navigate('WeightFormScreen')}
+      <Button mode="contained" style={[css.col1]} onPress={() => navigation.navigate(SCREEN.WeightForm)}
         disabled={
           !isSuperset && !superset[0]?.title ||
           isSuperset && (!superset[0]?.title || !superset[1]?.title)
